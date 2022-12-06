@@ -1,15 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { collection, getDocs } from 'firebase/firestore';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
+import { useSelector } from 'react-redux';
 // @mui
 import {
   Card,
   Table,
   Stack,
   Paper,
-  Avatar,
   Button,
   Popover,
   Checkbox,
@@ -22,8 +20,10 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
-  Alert
+  Alert,
+  CircularProgress,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
@@ -31,9 +31,11 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-
 import { AuthContext } from '../context/AuthContext';
-import { db } from '../firebase-config';
+
+
+
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -77,26 +79,13 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-    const { currentUser } = useContext(AuthContext);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isNoUser, setIsNoUser] = useState(false);
-    const [USERLIST, setUserList] = useState([]);
-    const fetchAllCryptoRequests = async () => {
-      setIsLoading(true);
-      const querySnapshot = await getDocs(collection(db, 'users'));
-      if(querySnapshot.empty) {
-        setIsNoUser(true)
-      }
-      querySnapshot.forEach((doc) => {
-        setIsLoading(false);
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, ' => ', doc.data());
-        setUserList((e) => [...e, doc.data()]);
-      });
-    };
-    useEffect(() => {
-      fetchAllCryptoRequests()
-    }, [])
+  const { currentUser } = useContext(AuthContext);
+  const USERLIST = useSelector((state) => state.merchant.merchantsList);
+  const isLoading = useSelector((state) => state.merchant.merchantsFetch.isLoading);
+  const isNoUser = useSelector((state) => state.merchant.merchantsFetch.isNoUser);
+
+
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -110,7 +99,7 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -169,20 +158,20 @@ export default function UserPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+
+
+
   return !isLoading && currentUser ? (
     <>
       <Helmet>
-        <title> Users | TFConvert </title>
+        <title> Merchants | TFConvert </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            TFConvert Users
+            TFConvert Merchants
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Users
-          </Button>
         </Stack>
 
         <Card>
@@ -202,36 +191,40 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { balance, company , customer, email, paymentUrl, userId } = row;
+                    const { balance, company, customer, email, paymentUrl, userId } = row;
                     const selectedUser = selected.indexOf(company) !== -1;
 
                     return (
-                      <TableRow hover key={userId} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, company)} />
-                        </TableCell>
+                      <>
+                        <TableRow hover key={userId} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, company)} />
+                          </TableCell>
 
-                        <TableCell align="left">{userId.slice(0, 7)}...</TableCell>
+                          <TableCell align="left">{userId.slice(0, 7)}...</TableCell>
 
-                        <TableCell align="left">{company}</TableCell>
+                          <TableCell align="left">{company}</TableCell>
 
-                        <TableCell align="left">{email}</TableCell>
+                          <TableCell align="left">{email}</TableCell>
 
-                        <TableCell align="left">
-                          <Label color={balance === 0 ? "warning" : "secondary"}>${balance}</Label>
-                        </TableCell>
-                        <TableCell align="left">
-                          <a href={`https://tfconvert.com/pay/</TableCell>${userId.slice(0, 7)}`}>
-                            https://tfconvert.com/pay/{userId.slice(0, 7)}
-                          </a>
-                        </TableCell>
+                          <TableCell align="left">
+                            <Label color={balance === 0 ? 'warning' : 'secondary'}>${balance}</Label>
+                          </TableCell>
+                          <TableCell align="left">
+                            <a href={`https://tfconvert.com/pay/</TableCell>${userId.slice(0, 7)}`}>
+                              https://tfconvert.com/pay/{userId.slice(0, 7)}
+                            </a>
+                          </TableCell>
 
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                          <TableCell align="right">
+                            <Link to={userId} style={{textDecoration: "none"}}>
+                              <Button variant="outlined" size="small">
+                                view
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      </>
                     );
                   })}
                   {emptyRows > 0 && (
@@ -298,36 +291,9 @@ export default function UserPage() {
         </Card>
       </Container>
 
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
+    
     </>
   ) : (
-    'Loading Data ...'
-  )
+    <CircularProgress color="secondary" />
+  );
 }

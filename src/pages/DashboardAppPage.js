@@ -1,89 +1,24 @@
-import { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { faker } from '@faker-js/faker';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useSelector } from 'react-redux';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
-import { AuthContext } from '../context/AuthContext';
-import { db } from '../firebase-config';
-import { userActions } from '../store/user/userSlice';
-// components
-import Iconify from '../components/iconify';
-// sections
-import {
-  AppTasks,
-  AppNewsUpdate,
-  AppOrderTimeline,
-  AppCurrentVisits,
-  AppWebsiteVisits,
-  AppTrafficBySite,
-  AppWidgetSummary,
-  AppCurrentSubject,
-  AppConversionRates,
-} from '../sections/@dashboard/app';
 
+// components
+
+// sections
+import { AppWebsiteVisits, AppWidgetSummary } from '../sections/@dashboard/app';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
- const dispatch = useDispatch();
-  const { currentUser } = useContext(AuthContext);
-  
-  const [isLoading , setIsLoading] = useState(true)
-  
- const [data , setData] = useState({
-  id: null,
-  company_name: null,
-  email: null,
-  payment_url: null,
-  balance: null,
-  wallets: []
- })
- const fetchData = async (id) => {
-   const req = query(collection(db, 'users'), where('userId', '==', `${id}`));
-   const querySnapshot = await getDocs(req).catch((e) => {
-     console.log(e);
-   });
-   querySnapshot.forEach((doc) => {
-     // doc.data() is never undefined for query doc snapshots
-    
-     setData({
-       id: doc.data().userId,
-       company_name: doc.data().company,
-       email: doc.data().email,
-       payment_url: doc.data().payment_url,
-       balance: doc.data().balance,
-       wallets: doc.data().wallets,
-     });
-     dispatch(
-       userActions.addUser({
-         id: doc.data().userId,
-         company_name: doc.data().company,
-         email: doc.data().email,
-         payment_url: doc.data().payment_url,
-         balance: doc.data().balance,
-         wallets: doc.data().wallets,
-       })
-     );
-     console.log(doc.data());
-     console.log('data', data.balance);
-     setIsLoading(false);
-   });
- };
+  const dashboardData = useSelector((state) => state.merchant.dashboardData);
 
-useEffect(() => {
-  fetchData(currentUser.uid);
-}, []);
-    
 
   const theme = useTheme();
 
-
-  return currentUser ? (
+  return (
     <>
       <Helmet>
         <title> Dashboard | TFConvert </title>
@@ -96,18 +31,38 @@ useEffect(() => {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary color="primary" title="Total Revenue" total={1} icon={'mdi:money'}  />
+            <AppWidgetSummary
+              color="primary"
+              title="Total Revenue"
+              total={`${dashboardData.totalRevenue}`}
+              icon={'mdi:money'}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary  title="Customers" total={200} icon={'ic:baseline-people-alt'} color="secondary" />
+            <AppWidgetSummary
+              title="Merchants"
+              total={dashboardData.totalMerchants}
+              icon={'ic:baseline-people-alt'}
+              color="secondary"
+            />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Pending TX" total={10} icon={'material-symbols:account-balance-wallet'} color="warning" />
+            <AppWidgetSummary
+              title="Pending TX"
+              total={'0'}
+              icon={'material-symbols:account-balance-wallet'}
+              color="warning"
+            />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Approved TX" total={20} icon={'material-symbols:account-balance-wallet'} color="success" />
+            <AppWidgetSummary
+              title="Approved TX"
+              total={'0'}
+              icon={'material-symbols:account-balance-wallet'}
+              color="success"
+            />
           </Grid>
 
           <Grid item xs={12} md={12} lg={12}>
@@ -152,7 +107,5 @@ useEffect(() => {
         </Grid>
       </Container>
     </>
-  ) : (
-    'Loading data...'
   );
 }

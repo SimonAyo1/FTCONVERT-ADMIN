@@ -8,9 +8,7 @@ import { Link, Container, Typography, Divider, Stack, Button } from '@mui/materi
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
-import Logo from '../components/logo';
-import Iconify from '../components/iconify';
-import { RegForm } from '../sections/auth/Register';
+
 // sections
 
 
@@ -86,7 +84,7 @@ export default function Register() {
 
             <Divider sx={{ my: 3 }} />
 
-            <RegForm />
+          
           </StyledContent>
         </Container>
       </StyledRoot>

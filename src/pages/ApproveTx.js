@@ -2,57 +2,76 @@ import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { NotificationManager, NotificationContainer } from 'react-notifications';
 import 'react-notifications/dist/react-notifications.css';
 // @mui
-import { Stack, Popover, MenuItem, Container, Typography, Grid, Button } from '@mui/material';
+import { Stack, Container, Typography, Grid, Button, CircularProgress } from '@mui/material';
 import Label from '../components/label/Label';
 import { web3Actions } from '../store/web3/web3Slice';
 // components
 
 import Iconify from '../components/iconify';
 import { db } from '../firebase-config';
+import '../components/fiat-crypto/wallet.css';
 
 // sections
 
 const createNotification = (type, e) => {
   switch (type) {
-    case "info":
-      NotificationManager.info("");
+    case 'info':
+      NotificationManager.info('');
       break;
-    case "success":
-      NotificationManager.success("Success", "Transaction Sucessfull", 3000);
+    case 'success':
+      NotificationManager.success('Success', 'Transaction Sucessfull', 3000);
       break;
-    case "warning":
-      NotificationManager.warning(
-        "Please Connect Your Wallet",
-        "Close after 3000ms",
-        3000
-      );
+    case 'warning':
+      NotificationManager.warning('Please Connect Your Wallet', 'Close after 3000ms', 3000);
       break;
-    case "error":
-      NotificationManager.error("Unsuccesful", e.message, 3000);
+    case 'error':
+      NotificationManager.error('Unsuccesful', e.message, 3000);
       break;
-      default:
-        break;
+    default:
+      break;
   }
 };
 
-
-
 export default function ApproveTx() {
-  const dispatch = useDispatch()
+  const [isProcessingUpdate, setIsProcessingUpdate] = useState(false);
+  const dispatch = useDispatch();
   const { id } = useParams();
   const [reqData, setReqData] = useState([]);
+  const [docId, setDocId] = useState(null);
   const q = query(collection(db, 'users_crypto_fiat_requests'), where('id', '==', `${id}`));
 
   const fetchRequest = async () => {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, ' => ', doc.data());
+
       setReqData(doc.data());
+      setDocId(doc.id);
+    });
+  };
+  const handleSuccessfulTx = async () => {
+    setIsProcessingUpdate(true);
+    const u = query(collection(db, 'users'), where('id', '==', `${reqData.userId}`));
+    const ucfr = doc(db, 'users_crypto_fiat_requests', `${docId}`);
+
+    const updateData = async (balance, userDocId) => {
+      const usr = doc(db, 'users', `${userDocId}`);
+      await updateDoc(ucfr, {
+        status: 'paid',
+      }).catch((e) => {});
+      await updateDoc(usr, {
+        balance: balance - reqData.price,
+      }).catch((e) => {});
+    };
+    const querySnapshot = await getDocs(u);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+
+      updateData(doc.data().balance, doc.id);
     });
   };
   useEffect(() => {
@@ -80,16 +99,14 @@ export default function ApproveTx() {
     const tx = async (ABI, CONTRACT_ADDRESS, FROM, TO, COIN) => {
       const tokenContract = await new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
 
-      console.log(isLoading);
-      console.log(tokenContract);
-      const tokens = web3.utils.toWei(reqData.amount.toString(), 'ether');
+      const tokens = web3.utils.toWei('10', 'ether');
       tokenContract.methods
         .transfer(TO, tokens)
         .send({
           value: 0,
           from: FROM,
         })
-        .on('receipt',  (receipt) => {
+        .on('receipt', (receipt) => {
           // receipt example
           dispatch(web3Actions.addpolygonScanUrl({ polygonScanUrl: receipt }));
           console.log(receipt);
@@ -498,7 +515,7 @@ export default function ApproveTx() {
           { anonymous: false, inputs: [], name: 'Unpause', type: 'event' },
         ];
         CONTRACT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-        console.log(FROM);
+
         tx(ABI, CONTRACT_ADDRESS, FROM, TO, 'USDT');
         break;
       case 'BUSD':
@@ -1174,7 +1191,7 @@ export default function ApproveTx() {
         tx(ABI, CONTRACT_ADDRESS, FROM, TO, 'USDC');
 
         break;
-      default: 
+      default:
         break;
     }
   };
@@ -1244,14 +1261,15 @@ export default function ApproveTx() {
             </dl>
           </div>
           <div style={{ justifyContent: 'center', display: 'flex' }}>
-            <Button
-              variant="contained"
-              disabled={web3===null}
-              onClick={() => {
-                pay("USDT")
-              }}
-            >
-              Send {reqData.amount} {reqData.cryptocurrency}
+            <Button variant="contained" disabled={web3 === null} onClick={() => {}}>
+              {isProcessingUpdate ? (
+                <CircularProgress color="secondary" />
+              ) : (
+                <>
+                  {' '}
+                  Send {reqData.amount} {reqData.cryptocurrency}
+                </>
+              )}
             </Button>
             <Button variant="contained" color="error" style={{ marginLeft: 10 }}>
               Decline Tx
@@ -1259,35 +1277,6 @@ export default function ApproveTx() {
           </div>
         </Grid>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }

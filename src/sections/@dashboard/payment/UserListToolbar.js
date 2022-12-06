@@ -56,7 +56,7 @@ export default function PAYMENTLISTToolbar({ numSelected, filterName, onFilterNa
         <StyledSearch
           value={filterName}
           onChange={onFilterName}
-          placeholder="Search payments..."
+          placeholder="Search requests..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />

@@ -23,7 +23,7 @@ const createNotification = (type) => {
     case 'error':
       NotificationManager.error('Connection Unsuccesful', 'Error', 3000);
       break;
-      default: console.log("sjds")
+      default: console.log("------")
   }
 };
 
@@ -50,14 +50,14 @@ export default function ConnectWallet() {
   const dispatch = useDispatch();
   const connect = async () => {
     const web3Modal = new Web3Modal({
-      network: 'mainnet', // optional
+      network: 'testnet', // optional
       cacheProvider: false, // optional
       providerOptions, // required
     });
     try {
       const provider = await web3Modal.connect();
       const webThree = new Web3(provider);
-      console.log(webThree)
+   
       const accounts = await webThree.eth.getAccounts();
       const addressSpliced = accounts[0];
       const one = addressSpliced.slice(0, 5);
@@ -67,7 +67,7 @@ export default function ConnectWallet() {
       dispatch(web3Actions.addWeb3({ web3: webThree }));
       createNotification('success');
     } catch (error) {
-      console.log(error);
+  
       createNotification('error');
     }
   };

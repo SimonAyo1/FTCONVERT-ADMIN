@@ -37,9 +37,8 @@ Nav.propTypes = {
 };
 
 export default function Nav({ openNav, onCloseNav }) {
-   const user = useSelector((state) => state.user.user);
-  const [uid, setUid] = useState(null);
-  const { currentUser } = useContext(AuthContext);
+  
+
   const { pathname } = useLocation();
 
  

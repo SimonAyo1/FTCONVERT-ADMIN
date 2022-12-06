@@ -1,9 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-
+import { collection, addDoc } from 'firebase/firestore'; 
 // @mui
-import { Stack, Popover, MenuItem, Container, Typography, Grid } from '@mui/material';
+import { Stack, Popover, MenuItem, Container, Typography, Grid, Button } from '@mui/material';
 
 // components
 
@@ -14,6 +14,14 @@ import '../styles/settings.css';
 export default function Settings() {
       
   const [open, setOpen] = useState(null);
+  const [cryptoName, setCryptoName] = useState(null)
+  
+  // const setNewCrypto = async () => {
+  //   const docRef = await addDoc(collection(db, 'accepted-cryptos'), {
+  //     name: cryptoName,
+  //   });
+  // }
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -40,8 +48,6 @@ export default function Settings() {
 
         <Grid item xs={12} sm={6} md={4}>
           <article className="card">
-          
-          
             <article className="grid gap-big">
               <div className="title">Change Password</div>
               <div className="grid col-2 gap-medium">
@@ -56,37 +62,19 @@ export default function Settings() {
               </div>
             </article>
           </article>
+
+          <article className="grid gap-big" style={{ marginTop: 20 }}>
+            <div className="title">Add Crypto</div>
+            <div className="grid col-2 gap-medium">
+              <fieldset>
+                <span>Enter Crypto Name</span>
+                <input type="text" className="a-input" onChange = {(e) => setCryptoName(e.target.value)} />
+                <Button style={{width: "30%", alignSelf: "flex-end"}}>Add Crypto</Button>
+              </fieldset>
+            </div>
+          </article>
         </Grid>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }

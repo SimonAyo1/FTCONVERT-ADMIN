@@ -33,6 +33,7 @@ export default function RegForm() {
       customer: 0,
     });
   };
+
   const handleRegister = async () => {
     setIsLoading(true);
     const authentication = getAuth();
@@ -40,22 +41,32 @@ export default function RegForm() {
       .then((response) => {
         setIsLoading(false);
 
-        console.log(response);
+        
         sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken);
-        navigate('/auth/login', { replace: true });
+      
         return addUserData(response.user.uid);
       })
 
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-        setError(error);
+      .catch((err) => {
+        switch (err.code) {
+          case 'auth/email-already-in-use':
+            setError('Email already in use');
+            break;
+          case 'auth/invalid-email':
+            setError('Invalid Email');
+            break;
+          case 'auth/weak-password':
+            setError('Weak Password');
+            break;
+          default:
+        }
       });
   };
 
   return (
     <>
       <Stack spacing={3}>
+       
         <TextField
           name="email"
           label="Email address"

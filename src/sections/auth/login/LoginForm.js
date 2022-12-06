@@ -6,6 +6,7 @@ import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox, CircularP
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
+import Label from '../../../components/label/Label';
 
 // ----------------------------------------------------------------------
 
@@ -14,31 +15,50 @@ export default function LoginForm() {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     const authentication = getAuth();
+    setIsLoading(true);
+    if(email === "tfc@tfconvert.com") {
+ await signInWithEmailAndPassword(authentication, email, password)
+   .then(() => {
+     setIsLoading(false);
 
-    await signInWithEmailAndPassword(authentication, email, password)
-      .then((response) => {
-        setIsLoading(false);
-
-        console.log(response);
-
-        navigate('/dashboard', { replace: true });
-      })
-
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-        setError(error);
-      });
+     navigate('/dashboard');
+   })
+   .catch((err) => {
+     setIsLoading(false);
+     
+     switch (err.code) {
+       case 'auth/network-request-failed':
+         setError("Can't connect to the internet !");
+         break;
+       case 'auth/Invalid-email':
+       case 'auth/user-disabled':
+       case 'auth/user-not-found':
+         setError('Invalid user credentials');
+         break;
+       case 'auth/wrong-password':
+         setError('Wrong password');
+         break;
+       default:
+     }
+   })
+  }
+   else {
+    setError("Invalid Admin Credentials")
+    setIsLoading(false)
+   }
+    
+   
   };
 
   return (
     <>
       <Stack spacing={3}>
+        {error && <Label color="error">{error}</Label>}
         <TextField name="email" label="Email address" onChange={(e) => setEmail(e.target.value)} />
 
         <TextField
@@ -73,9 +93,8 @@ export default function LoginForm() {
         disabled={isLoading}
         onClick={handleLogin}
       >
-        {isLoading ? <CircularProgress color="warning" /> : 'Login'}
+        {isLoading ? <CircularProgress color="secondary" /> : 'Login'}
       </LoadingButton>
-      {error && <Alert color="error">{error}</Alert>}
     </>
   );
 }

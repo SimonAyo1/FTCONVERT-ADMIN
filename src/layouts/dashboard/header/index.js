@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton, Button } from '@mui/material';
+import { getAuth, signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+
 // utils
 import { bgBlur } from '../../../utils/cssStyles';
 // import  {handleSignOut}  from '../../../utils/signout';
@@ -9,6 +12,7 @@ import { bgBlur } from '../../../utils/cssStyles';
 import Iconify from '../../../components/iconify';
 //
 import ConnectWallet from "../../../web3/ConnectWallet";
+
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +45,13 @@ Header.propTypes = {
 };
 
 export default function Header({ onOpenNav }) {
+  const navigate = useNavigate()
+    const handleLogout = () => {
+      const auth = getAuth();
+      signOut(auth);
+      navigate("/auth/login")
+      
+    };
   return (
     <StyledRoot>
       <StyledToolbar>
@@ -66,7 +77,7 @@ export default function Header({ onOpenNav }) {
           }}
         >
          
-          <Button variant="contained">Sign out</Button>
+          <Button variant="contained" onClick={handleLogout}>Sign out</Button>
      <ConnectWallet />
         </Stack>
       </StyledToolbar>

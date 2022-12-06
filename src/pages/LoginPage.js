@@ -55,10 +55,10 @@ export default function LoginPage() {
         {mdUp && (
           <StyledSection>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back To TFConvert
+              Hi, Welcome Back Admin
             </Typography>
             <img
-              src="https://img.freepik.com/free-photo/fun-3d-illustration-american-referee_183364-80815.jpg?w=740&t=st=1668888763~exp=1668889363~hmac=8a48cdab34b8ba4d017397d9edd196b9666dd756248fd843b61f650dfbfed758"
+              src="https://img.freepik.com/free-vector/male-businessman-character-sitting-office-workplace-computer-monitor-desk_80328-218.jpg?w=740&t=st=1669924695~exp=1669925295~hmac=8462299680011a67c0ee41d8d96aab441987ab4c11032fa7d5788580d8922306"
               alt="login"
             />
           </StyledSection>
@@ -67,18 +67,7 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to TFConvert
-            </Typography>
-
-            <Typography variant="body2" sx={{ mb: 3 }}>
-              Don’t have an account? {''}
-              <Link
-                variant="subtitle2"
-                style={{ cursor: 'pointer' }}
-                onClick={() => navigate('/auth/register', { replace: true })}
-              >
-                Get started
-              </Link>
+              Sign in
             </Typography>
 
             <Divider sx={{ my: 3 }} />

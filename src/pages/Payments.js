@@ -23,6 +23,7 @@ import {
   TableContainer,
   TablePagination,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 // components
@@ -107,7 +108,7 @@ export default function Payments() {
     querySnapshot.forEach((doc) => {
       setIsLoading(false);
       // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, ' => ', doc.data());
+   
       setPaymentList((e) => [...e, doc.data()]);
     });
   };
@@ -349,6 +350,6 @@ export default function Payments() {
       </Popover>
     </>
   ) : (
-    'Loading Data ...'
+    <CircularProgress color="secondary" />
   );
 }

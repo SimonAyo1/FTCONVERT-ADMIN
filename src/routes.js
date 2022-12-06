@@ -3,17 +3,15 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 //
-import BlogPage from './pages/BlogPage';
+
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
-import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import Payments from './pages/Payments';
-import Swap from './pages/Swap';
-import Register from './pages/Register';
 import Settings from './pages/Settings';
 import ApproveTx from './pages/ApproveTx';
+import ManageMerchant from './pages/ManageMerchant';
 
 
 // ----------------------------------------------------------------------
@@ -28,7 +26,8 @@ export default function Router() {
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'crypto-requests', element: <Payments /> },
         { path: 'users', element: <UserPage /> },
-        { path: 'product', element: <ProductsPage /> },
+        { path: 'users/:id', element: <ManageMerchant /> },
+
         { path: 'settings', element: <Settings /> },
         { path: 'crypto-requests/approve-tx/:id', element: <ApproveTx /> },
       ],
@@ -36,10 +35,6 @@ export default function Router() {
     {
       path: 'auth/login',
       element: <LoginPage />,
-    },
-    {
-      path: 'auth/register',
-      element: <Register />,
     },
 
     {

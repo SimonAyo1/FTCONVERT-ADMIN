@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+
 export const AuthContext = React.createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -24,7 +25,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   if (pending) {
-    return <>Loading...</>;
+    return (
+      <>
+        {' '}
+        <div className="spinner">
+          <div className="circle one"/>
+          <div className="circle two" />
+          <div className="circle three"/>
+        </div>
+      </>
+    );
   }
 
   return (

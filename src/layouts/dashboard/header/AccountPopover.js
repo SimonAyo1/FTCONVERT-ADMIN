@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { getAuth, signOut } from 'firebase/auth';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
 import account from '../../../_mock/account';
+
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +27,11 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  
+   const handleLogout = () => {
+   const auth = getAuth();
+   signOut(auth);
+   }
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -97,7 +104,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
           Sign out
         </MenuItem>
       </Popover>

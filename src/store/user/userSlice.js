@@ -1,21 +1,32 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user: null,
+  merchantsList: [],
+  dashboardData: [],
+  merchantsFetch: {
+    isLoading: false,
+    isNoUser: false
+  }
 };
 
-const userSlice = createSlice({
-  name: 'user',
+const merchantSlice = createSlice({
+  name: 'merchants',
   initialState,
 
   reducers: {
     // =========== add user ============
 
-    addUser(state, action) {
-      state.user = action.payload;
+    addMerchants(state, action) {
+      state.merchantsList = action.payload;
+    },
+    addDashboardData(state, action) {
+      state.dashboardData = action.payload;
+    },
+    addMerchantFetch(state, action) {
+      state.merchantsFetch = action.payload;
     },
   },
 });
 
-export const userActions = userSlice.actions;
-export default userSlice;
+export const merchantAction = merchantSlice.actions;
+export default merchantSlice;

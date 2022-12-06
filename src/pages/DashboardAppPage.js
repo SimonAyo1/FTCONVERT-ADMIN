@@ -42,7 +42,7 @@ export default function DashboardAppPage() {
           <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary
               title="Merchants"
-              total={dashboardData.totalMerchants}
+              total={`${dashboardData.totalMerchants}`}
               icon={'ic:baseline-people-alt'}
               color="secondary"
             />

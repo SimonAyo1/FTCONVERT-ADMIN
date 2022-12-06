@@ -10,9 +10,10 @@ const useFetchMerchants = (type) => {
 
   const fetchAllMerchants = async () => {
     setIsLoading(true);
-    const querySnapshot = await getDocs(collection(db, 'users'));
+    const querySnapshot = await getDocs(collection(db, 'users'))
     if (querySnapshot.empty) {
       setIsNoUser(true);
+      setIsLoading(false)
     }
     querySnapshot.forEach((doc) => {
       setIsLoading(false);

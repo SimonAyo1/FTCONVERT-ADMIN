@@ -37,7 +37,6 @@ import PAYMENTLIST from '../_mock/payments';
 import { AuthContext } from '../context/AuthContext';
 import { db } from '../firebase-config';
 
-
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -47,7 +46,6 @@ const TABLE_HEAD = [
   { id: 'crypto', label: 'Crypto', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: 'walletAddress', label: 'Wallet Address', alignRight: false },
-
 
   { id: '' },
   { id: '' },
@@ -105,12 +103,17 @@ export default function Payments() {
   const fetchAllCryptoRequests = async () => {
     setIsLoading(true);
     const querySnapshot = await getDocs(collection(db, 'users_crypto_fiat_requests'));
-    querySnapshot.forEach((doc) => {
+    if (querySnapshot.empty) {
+      setIsNoPayment(true);
       setIsLoading(false);
-      // doc.data() is never undefined for query doc snapshots
-   
-      setPaymentList((e) => [...e, doc.data()]);
-    });
+    } else {
+      querySnapshot.forEach((doc) => {
+        setIsLoading(false);
+        // doc.data() is never undefined for query doc snapshots
+
+        setPaymentList((e) => [...e, doc.data()]);
+      });
+    }
   };
 
   useEffect(() => {
@@ -275,7 +278,7 @@ export default function Payments() {
                             Oops
                           </Typography>
 
-                          <Alert severity="warning">You have no payment record yet</Alert>
+                          <Alert severity="warning">There is no request yet</Alert>
                         </Paper>
                       </TableCell>
                     </TableRow>

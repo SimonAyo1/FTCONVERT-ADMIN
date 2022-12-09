@@ -1237,6 +1237,13 @@ export default function ApproveTx() {
                   <Label color="secondary">${reqData.price}</Label>
                 </dd>
               </div>
+              <div className="receipt__list-row">
+                <dt className="receipt__item">TX Fee</dt>
+                <dd className="receipt__cost">
+                  {' '}
+                  <Label color="secondary">${reqData.transactionFee}</Label>
+                </dd>
+              </div>
 
               <div className="receipt__list-row">
                 <dt className="receipt__item">Wallet</dt>

@@ -246,7 +246,7 @@ export default function UserPage() {
                             Oops
                           </Typography>
 
-                          <Alert severity="warning">You have no payment record yet</Alert>
+                          <Alert severity="warning">No Merchant yet</Alert>
                         </Paper>
                       </TableCell>
                     </TableRow>

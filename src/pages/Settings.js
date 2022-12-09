@@ -17,8 +17,10 @@ export default function Settings() {
   const [cryptoName, setCryptoName] = useState(null);
   const [cryptoRate, setCryptoRate] = useState(null);
   const [updatedCryptoRate, setUpdatedCryptoRate] = useState(null);
+  const [transactionFee, setTransactionFee] = useState(null);
   const [isAddingCrypto, setIsAddingCrypto] = useState(false);
   const [isSettingRate, setIsSettingRate] = useState(false);
+  const [isSettingTXFee, setIsSettingTXFee] = useState(false);
   const [isDeleting, setisDeleting] = useState(false);
   const [dId, setDID] = useState(null);
   const [dIdDelete, setDIDDelete] = useState(null);
@@ -39,7 +41,6 @@ export default function Settings() {
   const fetchAcceptedCryptos = async () => {
     const querySnapshot = await getDocs(collection(db, 'accepted-cryptos'));
     querySnapshot.forEach((doc) => {
-      console.log(doc.id);
       setAcceptedCryptos((e) => [
         ...e,
         {
@@ -51,22 +52,20 @@ export default function Settings() {
     });
   };
   const deleteCrypto = async () => {
-    if(acceptedCryptos.length < 1) {
-      alert("Error: No Crypto To Delete")
+    if (acceptedCryptos.length < 1) {
+      alert('Error: No Crypto To Delete');
+    } else {
+      setisDeleting(true);
+      await deleteDoc(doc(db, 'accepted-cryptos', dIdDelete))
+        .then(() => {
+          setDIDDelete(null);
+          setisDeleting(false);
+        })
+        .catch(() => {
+          setisDeleting(false);
+          alert('Something is wrong, Failed to delete,');
+        });
     }
-    else {
-  setisDeleting(true);
-  await deleteDoc(doc(db, 'accepted-cryptos', dIdDelete))
-    .then(() => {
-      setDIDDelete(null);
-      setisDeleting(false);
-    })
-    .catch(() => {
-      setisDeleting(false);
-      alert('Something is wrong, Failed to delete,');
-    });
-    }
-  
   };
   const addCrypto = async () => {
     setIsAddingCrypto(true);
@@ -90,28 +89,47 @@ export default function Settings() {
         });
     }
   };
+  const genRef = doc(db, 'general-settings', 'cG8Ccm2GLqzgvwZw2tSQ');
+  const setTxFee = async () => {
+    setIsSettingTXFee(true);
+    if (transactionFee === null) {
+      alert('please enter a transaction percentage');
+      setIsSettingTXFee(false);
+    } else {
+      await updateDoc(genRef, {
+        transactionFee: parseInt(transactionFee, 10),
+      })
+        .then((e) => {
+          setIsSettingTXFee(false);
+          alert('Updated Successfully');
+          setTransactionFee(null);
+        })
+        .catch((e) => {
+          setIsSettingTXFee(false);
+          alert('Something is wrong, Failed to set,');
+        });
+    }
+  };
   const setRate = async () => {
-   if (acceptedCryptos.length < 1) {
-     alert('Error: No Crypto To Update');
-   } 
-   else {
-setIsSettingRate(true);
-const cryptoRef = doc(db, 'accepted-cryptos', `${dId}`);
+    if (acceptedCryptos.length < 1) {
+      alert('Error: No Crypto To Update');
+    } else {
+      setIsSettingRate(true);
+      const cryptoRef = doc(db, 'accepted-cryptos', `${dId}`);
 
-await updateDoc(cryptoRef, {
-  rate: parseInt(updatedCryptoRate, 10),
-})
-  .then((e) => {
-    setIsSettingRate(false);
-    alert('Added Successfully');
-    setUpdatedCryptoRate(null);
-  })
-  .catch((e) => {
-    setIsSettingRate(false);
-    alert('Something is wrong, Failed to update');
-  });
-   }
-    
+      await updateDoc(cryptoRef, {
+        rate: parseInt(updatedCryptoRate, 10),
+      })
+        .then((e) => {
+          setIsSettingRate(false);
+          alert('Added Successfully');
+          setUpdatedCryptoRate(null);
+        })
+        .catch((e) => {
+          setIsSettingRate(false);
+          alert('Something is wrong, Failed to update');
+        });
+    }
   };
   useEffect(() => {
     fetchAcceptedCryptos();
@@ -198,11 +216,28 @@ await updateDoc(cryptoRef, {
                   ))}
                 </select>
               </fieldset>
-             
             </div>
-             <Button variant="outlined" style={{ width: '20%', alignSelf: 'flex-end' }} onClick={deleteCrypto}>
-                {isDeleting ? <CircularProgress color="secondary" size={22} /> : 'Remove Crypto'}
-              </Button>
+            <Button variant="outlined" style={{ width: '20%', alignSelf: 'flex-end' }} onClick={deleteCrypto}>
+              {isDeleting ? <CircularProgress color="secondary" size={22} /> : 'Remove Crypto'}
+            </Button>
+          </article>
+          <article className="grid gap-big" style={{ marginTop: 20 }}>
+            <div className="title">Set Default Transaction Percentage</div>
+            <div className="grid col-2 gap-medium">
+              <fieldset>
+                <span>%</span>
+                <input type="number" className="a-input" onChange={(e) => setTransactionFee(e.target.value)} />
+              </fieldset>
+            </div>
+            <Button variant="outlined" style={{ width: '20%', alignSelf: 'flex-end' }} onClick={setTxFee}>
+              {isSettingTXFee ? (
+                <CircularProgress color="secondary" size={22} />
+              ) : transactionFee === null ? (
+                'Apply'
+              ) : (
+                `Apply ${transactionFee}%`
+              )}
+            </Button>
           </article>
         </Grid>
       </Container>

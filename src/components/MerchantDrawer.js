@@ -1,18 +1,40 @@
-import * as React from 'react';
-import { TextField, Button, Drawer, Select, FormControl, MenuItem, InputLabel, Box } from '@mui/material';
+import { useState } from 'react';
+import { TextField, Button, Drawer, Box, CircularProgress, Alert } from '@mui/material';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase-config';
 
 export default function MerchantDrawer(props) {
-  const [crypto, setcrypto] = React.useState('');
-
-  const handleChange = (event) => {
-    setcrypto(event.target.value);
-  };
-  const [state, setState] = React.useState({
+  const [fee, setFee] = useState(null);
+  const [isLoading, setIsLoading] = useState(0);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [state, setState] = useState({
     right: false,
   });
-  const { company, docId } = props;
-  const toggleDrawer = (anchor, open) => (event) => {
+  const { docId } = props;
  
+  const userRef = doc(db, 'users', docId);
+  const handleFee = async () => {
+    setIsLoading(true);
+    if (fee === null) {
+      setIsLoading(false);
+      setError("Percentage Can't Be Empty");
+    } else {
+      await updateDoc(userRef, {
+        transactionFee: parseInt(fee, 10),
+      })
+        .then(() => {
+          setMessage('Percentage updated Successfully');
+          setIsLoading(false);
+        })
+        .catch((e) => {
+          setError('Failed to set percentage ! Check your internet');
+          setIsLoading(false);
+         
+        });
+    }
+  };
+  const toggleDrawer = (anchor, open) => (event) => {
     setState({ [anchor]: open });
   };
 
@@ -22,7 +44,7 @@ export default function MerchantDrawer(props) {
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
           <div>
             {' '}
-            <h3>Set Crypto Rate</h3>
+            <h3>Set Transaction Fee</h3>
           </div>
 
           <Button onClick={toggleDrawer(anchor, false)}>
@@ -38,34 +60,29 @@ export default function MerchantDrawer(props) {
             </svg>
           </Button>
         </div>
-
+        {message && <Alert severity="success">{message}</Alert>}
+        {error && <Alert severity="error">{error}</Alert>}
         <div style={{ marginTop: 20 }}>
           <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Crypto</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={crypto}
-                label="Crypto"
-                onChange={handleChange}
-              >
-                <MenuItem value="USDT">USDT</MenuItem>
-                <MenuItem value="USDC">USDC</MenuItem>
-                <MenuItem value="BUSD">BUSD</MenuItem>
-              </Select>
-            </FormControl>
             <TextField
-              id="outlined-basic"
-              label="Rate"
+              id="Percent"
+              label="Percent"
               type="number"
               variant="outlined"
               fullWidth
               style={{ marginTop: 10 }}
+              onChange={(e) => {
+                setFee(e.target.value);
+                setError('');
+                setMessage('');
+              }}
             />
           </Box>
           <div style={{ marginTop: 10 }}>
-            <Button>Apply Rate</Button>
+            <Button onClick={handleFee} variant="outlined">
+              {' '}
+              {isLoading ? <CircularProgress size={22} /> : fee === null ? 'Apply' : `Apply ${fee}%`}
+            </Button>
           </div>
         </div>
       </div>
@@ -76,7 +93,7 @@ export default function MerchantDrawer(props) {
     <div>
       <>
         <Button variant="outlined" onClick={toggleDrawer('right', true)}>
-          Set Rate
+          Set TX Fee
         </Button>
         <Drawer anchor={'right'} open={state.right} onClose={toggleDrawer('right', false)}>
           {list('right')}

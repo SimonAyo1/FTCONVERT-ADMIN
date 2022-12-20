@@ -164,13 +164,13 @@ export default function UserPage() {
   return !isLoading && currentUser ? (
     <>
       <Helmet>
-        <title> Merchants | TFConvert </title>
+        <title> Merchants | FTconvert </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            TFConvert Merchants
+            FTconvert Merchants
           </Typography>
         </Stack>
 
@@ -211,13 +211,13 @@ export default function UserPage() {
                             <Label color={balance === 0 ? 'warning' : 'secondary'}>${balance}</Label>
                           </TableCell>
                           <TableCell align="left">
-                            <a href={`https://tfconvert.com/pay/</TableCell>${userId.slice(0, 7)}`}>
-                              https://tfconvert.com/pay/{userId.slice(0, 7)}
+                            <a href={`https://pay-ftconvert/pay/</TableCell>${userId.slice(0, 7)}`}>
+                              https://pay-ftconvert/pay/{userId.slice(0, 7)}
                             </a>
                           </TableCell>
 
                           <TableCell align="right">
-                            <Link to={userId} style={{textDecoration: "none"}}>
+                            <Link to={userId} style={{ textDecoration: 'none' }}>
                               <Button variant="outlined" size="small">
                                 view
                               </Button>
@@ -290,8 +290,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-    
     </>
   ) : (
     <CircularProgress color="secondary" />

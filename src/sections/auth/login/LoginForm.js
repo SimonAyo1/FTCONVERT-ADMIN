@@ -21,7 +21,7 @@ export default function LoginForm() {
   const handleLogin = async () => {
     const authentication = getAuth();
     setIsLoading(true);
-    if(email === "tfc@tfconvert.com") {
+    if(email === "admin@ftconvert.com") {
  await signInWithEmailAndPassword(authentication, email, password)
    .then(() => {
      setIsLoading(false);

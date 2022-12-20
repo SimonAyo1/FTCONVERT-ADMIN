@@ -45,7 +45,7 @@ export default function Swap() {
   return (
     <>
       <Helmet>
-        <title> Swap | TFConvert </title>
+        <title> Swap | FTconvert </title>
       </Helmet>
 
       <Container>
@@ -59,7 +59,7 @@ export default function Swap() {
         </Stack>
 
         <Grid item xs={12} sm={6} md={4}>
-          <div style={{overflowX: "scroll"}}>
+          <div style={{ overflowX: 'scroll' }}>
             <Wallet />
           </div>
         </Grid>

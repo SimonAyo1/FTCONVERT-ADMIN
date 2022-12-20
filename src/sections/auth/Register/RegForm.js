@@ -28,7 +28,7 @@ export default function RegForm() {
       company: companyName,
       email,
       wallets: [],
-      payment_url: `https://www.tfconvert.com/pay/${id.slice(0, 7)}`,
+      payment_url: `https://www.ftconvert.com/pay/${id.slice(0, 7)}`,
       balance: 0,
       customer: 0,
     });

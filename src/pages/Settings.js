@@ -137,7 +137,7 @@ export default function Settings() {
   return (
     <>
       <Helmet>
-        <title> Settings | TFConvert </title>
+        <title> Settings | FTconvert </title>
       </Helmet>
 
       <Container>

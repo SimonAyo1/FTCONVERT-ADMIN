@@ -181,7 +181,7 @@ export default function Payments() {
   return !isLoading && currentUser ? (
     <>
       <Helmet>
-        <title> Crypto Requests | TFConvert </title>
+        <title> Crypto Requests | FTconvert </title>
       </Helmet>
 
       <Container>

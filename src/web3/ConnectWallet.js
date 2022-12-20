@@ -32,7 +32,7 @@ const providerOptions = {
   coinbasewallet: {
     package: CoinbaseWalletSDK,
     options: {
-      appName: 'TFConvert',
+      appName: 'FTconvert',
       infuraId: '2dff6ecffd694a2e80f56b12856fce09',
     },
   },

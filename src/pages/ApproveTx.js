@@ -1198,7 +1198,7 @@ export default function ApproveTx() {
   return (
     <>
       <Helmet>
-        <title> Approve Request | TFConvert </title>
+        <title> Approve Request | FTconvert </title>
       </Helmet>
 
       <Container>

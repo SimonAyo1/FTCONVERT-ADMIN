@@ -28,7 +28,7 @@ const createNotification = (type) => {
 };
 
 const providerOptions = {
-  /* See Provider Options Section */
+
   coinbasewallet: {
     package: CoinbaseWalletSDK,
     options: {
@@ -39,7 +39,7 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      // Mikko's test key - don't copy as your mileage may vary
+   
       infuraId: '2dff6ecffd694a2e80f56b12856fce09',
     },
   },
